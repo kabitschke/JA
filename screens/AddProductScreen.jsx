@@ -39,7 +39,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
         keyboardType="numeric"
       />
       <Button title="Adicionar Produto" onPress={addProduct} />
-    </View>
+    </View>    
   );
 }
 

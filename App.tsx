@@ -9,17 +9,38 @@ import SalesRecordScreen from './screens/SalesRecordScreen';
 
 const Stack = createStackNavigator();
 
+
+
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="AddProduct" component={AddProductScreen} />
-        <Stack.Screen name="ProductList" component={ProductListScreen} />
-        <Stack.Screen name="SalesRecord" component={SalesRecordScreen} />
+      <Stack.Navigator
+        initialRouteName="Home"
+
+      >
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'JA Lanches' }}
+        />
+        <Stack.Screen
+          name="AddProduct"
+          component={AddProductScreen}
+          options={{ title: 'Adicionar Produto' }}
+        />
+        <Stack.Screen
+          name="ProductList"
+          component={ProductListScreen}
+          options={{ title: 'Lista de Produtos' }}
+        />
+        <Stack.Screen
+          name="SalesRecord"
+          component={SalesRecordScreen}
+          options={{ title: 'Registro de Vendas' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
+}
 
 export default App;

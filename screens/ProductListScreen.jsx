@@ -27,7 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
         renderItem={({ item }) => (
           <View>
             <Text>{item.name}</Text>
-            <Text>Quantity: {item.quantity}</Text>
+            <Text>Quantidade: {item.quantity}</Text>
           </View>
         )}
       />
