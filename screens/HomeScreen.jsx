@@ -1,52 +1,59 @@
-import React from 'react';
-import { View, Pressable, StyleSheet, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const HomeScreen = () => {
-  const navigation = useNavigation();
-  
+  const HomeScreen = ({ navigation }) => {
+  const [totalSales, setTotalSales] = useState(0);
+
+  useEffect(() => {
+    const fetchTotalSales = async () => {
+      const storedTotalSales = await AsyncStorage.getItem('totalSales');
+      if (storedTotalSales) {
+        setTotalSales(parseFloat(storedTotalSales));
+      }
+    };
+
+    fetchTotalSales();
+  }, []);
+
   return (
     <View style={styles.container}>
-         
-      <Pressable style={styles.btn} onPress={() => navigation.navigate('AddProduct')}>
-        <Text style={styles.btnText}>Adicionar Produto</Text>
-      </Pressable>
-
-      <Pressable style={styles.btn} onPress={() => navigation.navigate('ProductList')}>
-        <Text style={styles.btnText}>Lista de Produtos</Text>
-      </Pressable>
-
-      <Pressable style={styles.btn} onPress={() => navigation.navigate('SalesRecord')}>
-        <Text style={styles.btnText}>Registrar Venda</Text>
-      </Pressable>
-
-     
-    
+      <Text style={styles.title}>Bem-vindo ao Sistema de Controle de Estoque</Text>
+      <Text style={styles.totalSales}>Total Vendido: R$ {totalSales.toFixed(2)}</Text>
+      
+      <Button
+        title="Adicionar Produto"
+        onPress={() => navigation.navigate('AddProduct')}
+      />
+      <Button
+        title="Listar Produtos"
+        onPress={() => navigation.navigate('ProductList')}
+      />
+      <Button
+        title="Registrar Venda"
+        onPress={() => navigation.navigate('SalesRecord')}
+      />
     </View>
   );
-};
+}
+
+export default HomeScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e3f5e0',
-    alignItems: 'center',
+    padding: 20,
     justifyContent: 'center',
   },
-  btn: {
-    width: 200,
-    height: 40,
-    marginBottom: 10,
-    backgroundColor: '#50b63f',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center'
-
-  },
-  btnText: {
-    color: '#FFFFFF',
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
-    fontSize: 16
-
-  }
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  totalSales: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
 });
-export default HomeScreen;

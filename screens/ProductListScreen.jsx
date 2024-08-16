@@ -1,55 +1,56 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, Alert, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 
   const ProductListScreen = ({ navigation }) => {
-  const [products, setProducts] = React.useState([]);
+  const [products, setProducts] = useState([]);
 
-  
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const storedProducts = await AsyncStorage.getItem('products');
+      if (storedProducts) {
+        setProducts(JSON.parse(storedProducts));
+      }
+    };
 
-  // Carregar produtos do AsyncStorage
-  useFocusEffect(
-    React.useCallback(() => {
-      const loadProducts = async () => {
-        try {
-          const storedProducts = await AsyncStorage.getItem('products');
-          const products = storedProducts ? JSON.parse(storedProducts) : [];
-          setProducts(products);
-        } catch (e) {
-          console.error('Failed to load products', e);
-        }
-      };
+    const unsubscribe = navigation.addListener('focus', fetchProducts);
 
-      loadProducts();
-    }, [])
-  );
+    return unsubscribe;
+  }, [navigation]);
+
+  const confirmDeleteProduct = (productName) => {
+    Alert.alert(
+      "Confirmar Exclusão",
+      `Tem certeza de que deseja excluir o produto "${productName}"?`,
+      [
+        {
+          text: "Não",
+          onPress: () => console.log("Exclusão cancelada"),
+          style: "cancel"
+        },
+        { text: "Sim", onPress: () => deleteProduct(productName) }
+      ]
+    );
+  };
 
   const deleteProduct = async (productName) => {
-    const updatedProducts = products.filter(product => product.name !== productName);
-
     try {
+      const updatedProducts = products.filter(product => product.name !== productName);
       await AsyncStorage.setItem('products', JSON.stringify(updatedProducts));
       setProducts(updatedProducts);
-      Alert.alert('Produto excluído com sucesso!');
+      Alert.alert("Produto excluído com sucesso!");
     } catch (e) {
-      Alert.alert('Erro ao excluir produto.');
+      Alert.alert("Erro ao excluir o produto.");
     }
   };
 
-  const editProduct = (product) => {
-    navigation.navigate('AddProduct', { product });
-  };
-
-  
-
-  const renderItem = ({ item }) => (
+  const renderProduct = ({ item }) => (
     <View style={styles.productContainer}>
-      <Text>{item.name} - {item.quantity} unidades</Text>
-      <View style={styles.buttonContainer}>
-        <Button title="Editar" onPress={() => editProduct(item)} />
-        <Button title="Excluir" onPress={() => deleteProduct(item.name)} />
-      </View>
+      <Text style={styles.productName}>{item.name} - {item.quantity}</Text>
+      <View style={styles.productContainer}>
+        <Button title="Editar" color="#50b63f" onPress={() => navigation.navigate('AddProduct', { product: item })} />
+        <Button title="Excluir" color="red" onPress={() => confirmDeleteProduct(item.name)} />
+      </View>  
     </View>
   );
 
@@ -58,7 +59,7 @@ import { useFocusEffect } from '@react-navigation/native';
       <FlatList
         data={products}
         keyExtractor={(item) => item.name}
-        renderItem={renderItem}
+        renderItem={renderProduct}
       />
     </View>
   );
@@ -68,17 +69,17 @@ export default ProductListScreen;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
   },
   productContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 10,
+    gap: 10,
+    marginBottom: 10,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: 150,
+  productName: {
+    fontSize: 16,
   },
 });

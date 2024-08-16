@@ -1,61 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-  const AddProductScreen = ({ route, navigation }) => {
-  const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const productToEdit = route.params?.product;
-
-  useEffect(() => {
-    if (productToEdit) {
-      setName(productToEdit.name);
-      setQuantity(String(productToEdit.quantity));
-    }
-  }, [productToEdit]);
+  const AddProductScreen = ({ navigation, route }) => {
+  const [name, setName] = useState(route.params?.product?.name || '');
+  const [quantity, setQuantity] = useState(route.params?.product?.quantity || '');
+  const [price, setPrice] = useState(route.params?.product?.price || '');
 
   const saveProduct = async () => {
-    if (!name || !quantity) {
-      Alert.alert('Por favor, preencha todos os campos.');
-      return;
-    }
-
     try {
       const storedProducts = await AsyncStorage.getItem('products');
-      let products = storedProducts ? JSON.parse(storedProducts) : [];
+      const products = storedProducts ? JSON.parse(storedProducts) : [];
 
-      if (productToEdit) {
-        // Remove o produto antigo da lista
-        products = products.filter(product => product.name !== productToEdit.name);
-      }
+      const updatedProducts = products.filter(product => product.name !== name);
+      updatedProducts.push({ name, quantity, price });
 
-      // Adiciona o produto atualizado ou novo à lista
-      products.push({ name, quantity: parseInt(quantity) });
-
-      await AsyncStorage.setItem('products', JSON.stringify(products));
-      Alert.alert('Produto salvo com sucesso!');
+      await AsyncStorage.setItem('products', JSON.stringify(updatedProducts));
       navigation.goBack();
     } catch (e) {
-      Alert.alert('Erro ao salvar o produto.');
+      console.error("Erro ao salvar o produto.", e);
     }
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Nome do Produto"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Quantidade"
-        value={quantity}
-        onChangeText={setQuantity}
-        keyboardType="numeric"
-        style={styles.input}
-      />
-      <Button title="Salvar" onPress={saveProduct} />
+      <Text>Nome do Produto:</Text>
+      <TextInput value={name} onChangeText={setName} style={styles.input} />
+      
+      <Text>Quantidade:</Text>
+      <TextInput value={quantity} onChangeText={setQuantity} style={styles.input} keyboardType="numeric" />
+      
+      <Text>Preço:</Text>
+      <TextInput value={price} onChangeText={setPrice} style={styles.input} keyboardType="numeric" />
+      
+      <Button title="Salvar Produto" onPress={saveProduct} />
     </View>
   );
 }
@@ -64,13 +42,14 @@ export default AddProductScreen;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 10,
+    marginBottom: 20,
     paddingLeft: 8,
   },
 });

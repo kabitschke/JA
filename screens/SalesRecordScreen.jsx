@@ -1,96 +1,83 @@
-import * as React from 'react';
-import { View, Button, TextInput, Alert, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+  const SalesRecordScreen = ({ navigation }) => {
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [products, setProducts] = useState([]);
+  const [totalSales, setTotalSales] = useState(0);
 
-  const  SalesRecordScreen = ({ navigation }) => {
-  const [selectedProduct, setSelectedProduct] = React.useState('');
-  const [quantitySold, setQuantitySold] = React.useState('');
-  const [products, setProducts] = React.useState([]);
-
-  // Carregar produtos do AsyncStorage
-  React.useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const storedProducts = await AsyncStorage.getItem('products');
-        const products = storedProducts ? JSON.parse(storedProducts) : [];
-        setProducts(products);
-      } catch (e) {
-        console.error('Failed to load products', e);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const storedProducts = await AsyncStorage.getItem('products');
+      if (storedProducts) {
+        setProducts(JSON.parse(storedProducts));
       }
     };
 
-    loadProducts();
+    fetchProducts();
   }, []);
 
   const registerSale = async () => {
-    if (!selectedProduct || quantitySold === '') {
-      Alert.alert('Por favor, selecione um produto e insira a quantidade vendida.');
-      return;
-    }
+    const product = products.find(prod => prod.name === selectedProduct);
+    if (product && quantity) {
+      const newQuantity = product.quantity - parseInt(quantity);
+      const updatedProducts = products.map(prod => 
+        prod.name === selectedProduct ? { ...prod, quantity: newQuantity } : prod
+      );
 
-    const productIndex = products.findIndex(product => product.name === selectedProduct);
-    if (productIndex === -1) {
-      Alert.alert('Produto não encontrado.');
-      return;
-    }
+      const saleValue = parseFloat(product.price) * parseInt(quantity);
+      const newTotalSales = totalSales + saleValue;
 
-    const selectedProductData = products[productIndex];
-    const newQuantity = selectedProductData.quantity - parseInt(quantitySold);
-
-    if (newQuantity < 0) {
-      Alert.alert('Quantidade insuficiente em estoque.');
-      return;
-    }
-
-    // Atualiza o produto com a nova quantidade
-    const updatedProducts = [...products];
-    updatedProducts[productIndex] = { ...selectedProductData, quantity: newQuantity };
-
-    // Salva os produtos atualizados no AsyncStorage
-    try {
       await AsyncStorage.setItem('products', JSON.stringify(updatedProducts));
-      Alert.alert('Venda registrada com sucesso!');
-      navigation.goBack(); // Navega de volta à tela anterior
-    } catch (e) {
-      Alert.alert('Erro ao registrar venda.');
+      setProducts(updatedProducts);
+      setTotalSales(newTotalSales);
+      await AsyncStorage.setItem('totalSales', JSON.stringify(newTotalSales));
+
+      navigation.goBack();
+    } else {
+      alert("Por favor, selecione um produto e insira uma quantidade válida.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Picker
-        selectedValue={selectedProduct}
-        onValueChange={(itemValue) => setSelectedProduct(itemValue)}
-      >
-        <Picker.Item label="Selecione um produto" value="" />
-        {products.map((product, index) => (
-          <Picker.Item key={index} label={product.name} value={product.name} />
+      <Text>Produto:</Text>
+      <Picker selectedValue={selectedProduct} onValueChange={itemValue => setSelectedProduct(itemValue)}>
+        {products.map(product => (
+          <Picker.Item key={product.name} label={product.name} value={product.name} />
         ))}
       </Picker>
-      <TextInput
-        placeholder="Quantidade Vendida"
-        value={quantitySold}
-        onChangeText={setQuantitySold}
-        keyboardType="numeric"
-        style={styles.input}
-      />
+
+      <Text>Quantidade:</Text>
+      <TextInput value={quantity} onChangeText={setQuantity} style={styles.input} keyboardType="numeric" />
+      
       <Button title="Registrar Venda" onPress={registerSale} />
+
+      <View style={styles.salesContainer}>
+        <Text>Total Vendido: R$ {totalSales.toFixed(2)}</Text>
+      </View>
     </View>
   );
 }
+
 export default SalesRecordScreen;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginVertical: 10,
-    paddingHorizontal: 10,
+    marginBottom: 20,
+    paddingLeft: 8,
+  },
+  salesContainer: {
+    marginTop: 20,
   },
 });
