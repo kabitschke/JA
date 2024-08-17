@@ -7,6 +7,7 @@ import { Picker } from '@react-native-picker/picker';
   const [selectedProduct, setSelectedProduct] = useState('');
   const [quantity, setQuantity] = useState('');
   const [products, setProducts] = useState([]);
+  const [order, setOrder] = useState([]);
 
   // Carrega os produtos do AsyncStorage quando o componente é montado
   useEffect(() => {
@@ -19,28 +20,53 @@ import { Picker } from '@react-native-picker/picker';
     loadProducts();
   }, []);
 
-  const registerSale = async () => {
+  const addProductToOrder = () => {
     if (!selectedProduct || !quantity) {
       Alert.alert('Erro', 'Por favor, selecione um produto e insira a quantidade.');
       return;
     }
-
-    // Encontra o produto selecionado
+  
+    // Busca o produto selecionado na lista de produtos
     const product = products.find(p => p.name === selectedProduct);
-
     if (!product) {
       Alert.alert('Erro', 'Produto não encontrado.');
       return;
     }
+  
+    // Verifica se a quantidade solicitada está disponível no estoque
+    if (parseInt(quantity) > product.quantity) {
+      Alert.alert('Erro', `Quantidade solicitada para ${product.name} excede o estoque disponível.`);
+      return;
+    }
+  
+    // Verifica se o produto já foi adicionado ao pedido
+    const existingProduct = order.find(p => p.name === selectedProduct);
+    if (existingProduct) {
+      Alert.alert('Erro', 'Produto já adicionado ao pedido. Altere a quantidade se necessário.');
+      return;
+    }
+  
+    // Adiciona o produto ao pedido
+    setOrder([...order, { name: selectedProduct, quantity: parseInt(quantity), price: product.price }]);
+    setSelectedProduct('');
+    setQuantity('');
+  };
+  
 
-    const totalSale = product.price * parseInt(quantity);
+  const registerSale = async () => {
+    if (order.length === 0) {
+      Alert.alert('Erro', 'Nenhum produto adicionado ao pedido.');
+      return;
+    }
 
-    // Deduz a quantidade do estoque
+    let totalSale = 0;
     const updatedProducts = products.map(p => {
-      if (p.name === selectedProduct) {
+      const orderedProduct = order.find(op => op.name === p.name);
+      if (orderedProduct) {
+        totalSale += orderedProduct.price * orderedProduct.quantity;
         return {
           ...p,
-          quantity: p.quantity - parseInt(quantity)
+          quantity: p.quantity - orderedProduct.quantity
         };
       }
       return p;
@@ -48,13 +74,13 @@ import { Picker } from '@react-native-picker/picker';
 
     await AsyncStorage.setItem('products', JSON.stringify(updatedProducts));
 
-    // Recupera as vendas totais existentes e atualiza
     const storedTotalSales = await AsyncStorage.getItem('totalSales');
     const newTotalSales = storedTotalSales ? parseFloat(storedTotalSales) + totalSale : totalSale;
 
     await AsyncStorage.setItem('totalSales', newTotalSales.toString());
 
     Alert.alert('Sucesso', `Venda registrada! Total vendido: R$ ${totalSale.toFixed(2)}`);
+    setOrder([]);
     navigation.navigate('Home');
   };
 
@@ -76,6 +102,14 @@ import { Picker } from '@react-native-picker/picker';
         value={quantity}
         onChangeText={setQuantity}
       />
+      <Button title="Adicionar Produto ao Pedido" onPress={addProductToOrder} />
+
+      <View style={styles.orderList}>
+        {order.map((item, index) => (
+          <Text key={index}>{item.name} - Quantidade: {item.quantity}</Text>
+        ))}
+      </View>
+
       <Button title="Registrar Venda" onPress={registerSale} />
     </View>
   );
@@ -96,4 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
   },
+  orderList: {
+    marginVertical: 20,
+  }
 });

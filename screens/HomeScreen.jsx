@@ -1,22 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
-  const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => {
   const [totalSales, setTotalSales] = useState(0);
 
-  const fetchTotalSales = async () => {
+  const fetchTotalSales = useCallback(async () => {
     const storedTotalSales = await AsyncStorage.getItem('totalSales');
     if (storedTotalSales) {
       setTotalSales(parseFloat(storedTotalSales));
     }
+  }, []);
+
+  const handleResetSales = async () => {
+    Alert.alert(
+      'Confirmar',
+      'Você tem certeza que deseja zerar as vendas?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Zerar',
+          onPress: async () => {
+            await AsyncStorage.setItem('totalSales', '0');
+            setTotalSales(0);
+          },
+          style: 'destructive',
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       fetchTotalSales();
-    }, [])
+    }, [fetchTotalSales])
   );
 
   return (
@@ -36,9 +58,14 @@ import { useFocusEffect } from '@react-navigation/native';
         title="Registrar Venda"
         onPress={() => navigation.navigate('SalesRecord')}
       />
+      <Button
+        title="Zerar Vendas"
+        onPress={handleResetSales}
+        color="red" // Optional: Makes the button color red to indicate it's a destructive action
+      />
     </View>
   );
-}
+};
 
 export default HomeScreen;
 
