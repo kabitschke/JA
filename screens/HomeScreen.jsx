@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
   const HomeScreen = ({ navigation }) => {
   const [totalSales, setTotalSales] = useState(0);
 
-  useEffect(() => {
-    const fetchTotalSales = async () => {
-      const storedTotalSales = await AsyncStorage.getItem('totalSales');
-      if (storedTotalSales) {
-        setTotalSales(parseFloat(storedTotalSales));
-      }
-    };
+  const fetchTotalSales = async () => {
+    const storedTotalSales = await AsyncStorage.getItem('totalSales');
+    if (storedTotalSales) {
+      setTotalSales(parseFloat(storedTotalSales));
+    }
+  };
 
-    fetchTotalSales();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchTotalSales();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
