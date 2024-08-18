@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Button, StyleSheet, Alert } from 'react-native';
+import { View,TouchableOpacity, Text, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -46,23 +46,35 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.title}>Bem-vindo ao Sistema de Controle de Estoque</Text>
       <Text style={styles.totalSales}>Total Vendido: R$ {totalSales.toFixed(2)}</Text>
       
-      <Button
-        title="Adicionar Produto"
-        onPress={() => navigation.navigate('AddProduct')}
-      />
-      <Button
-        title="Listar Produtos"
-        onPress={() => navigation.navigate('ProductList')}
-      />
-      <Button
-        title="Registrar Venda"
-        onPress={() => navigation.navigate('SalesRecord')}
-      />
-      <Button
-        title="Zerar Vendas"
-        onPress={handleResetSales}
-        color="red" // Optional: Makes the button color red to indicate it's a destructive action
-      />
+     <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('AddProduct')}
+        >
+        <Text style={styles.buttonText}>Adicionar Produto</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('ProductList')}
+        >
+        <Text style={styles.buttonText}>Listar Produtos</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('SalesRecord')}
+        >
+        <Text style={styles.buttonText}>Registrar Venda</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+          style={styles.buttonAlert}
+          onPress={handleResetSales}
+        >
+        <Text style={styles.buttonText}>Zerar Vendas</Text>
+    </TouchableOpacity>
+
+
     </View>
   );
 };
@@ -85,5 +97,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
     textAlign: 'center',
+    padding: 10,
+ 
   },
+  button: {
+    backgroundColor: '#ccffcc', // Cor de fundo do botão
+    padding: 10,
+    marginBottom: 8,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#000', // Cor do texto
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  buttonAlert: {
+    backgroundColor: '#ff9999', // Cor de fundo do botão
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    fontWeight: '500',
+  }
 });

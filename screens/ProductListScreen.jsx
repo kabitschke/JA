@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-  const ProductListScreen = ({ navigation }) => {
+const ProductListScreen = ({ navigation }) => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -45,12 +46,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
   };
 
   const renderProduct = ({ item }) => (
-    <View style={styles.productContainer}>
-      <Text style={styles.productName}>{item.name} - {item.quantity}</Text>
-      <View style={styles.productContainer}>
-        <Button title="Editar" color="#50b63f" onPress={() => navigation.navigate('AddProduct', { product: item })} />
-        <Button title="Excluir" color="red" onPress={() => confirmDeleteProduct(item.name)} />
-      </View>  
+    <View style={styles.row}>
+      <View style={styles.cell}>
+        <Text style={styles.productName}>{item.name}</Text>
+      </View>
+      <View style={styles.cell}>
+        <Text style={styles.productName}>{item.quantity}</Text>
+      </View>
+      <View style={styles.cell}>
+        <TouchableOpacity style={styles.buttonEdit} onPress={() => navigation.navigate('AddProduct', { product: item })}>
+          <Icon name="pencil" size={20} color="#000" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.cell}>
+        <TouchableOpacity style={styles.buttonRemove} onPress={() => confirmDeleteProduct(item.name)}>
+          <Icon name="trash" size={20} color="#ffffff" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -72,14 +84,30 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  productContainer: {
+  row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 10,
     marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 10,
+  },
+  cell: {
+    flex: 1,
+    alignItems: 'center',
   },
   productName: {
     fontSize: 16,
+  },
+  buttonRemove: {
+    backgroundColor: '#ff9999',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonEdit: {
+    backgroundColor: '#ccffcc', 
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
   },
 });

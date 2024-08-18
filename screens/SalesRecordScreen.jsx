@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, Button, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 
@@ -102,15 +102,27 @@ import { Picker } from '@react-native-picker/picker';
         value={quantity}
         onChangeText={setQuantity}
       />
-      <Button title="Adicionar Produto ao Pedido" onPress={addProductToOrder} />
+     
+
+      <TouchableOpacity
+          style={styles.button}
+          onPress={addProductToOrder}
+        >
+        <Text style={styles.buttonText}>Adicionar Produto ao Pedido</Text>
+     </TouchableOpacity>
 
       <View style={styles.orderList}>
         {order.map((item, index) => (
           <Text key={index}>{item.name} - Quantidade: {item.quantity}</Text>
         ))}
-      </View>
+      </View>      
 
-      <Button title="Registrar Venda" onPress={registerSale} />
+      <TouchableOpacity
+          style={styles.button}
+          onPress={registerSale}
+        >
+        <Text style={styles.buttonText}>Registrar Venda</Text>
+    </TouchableOpacity>
     </View>
   );
 }
@@ -132,5 +144,16 @@ const styles = StyleSheet.create({
   },
   orderList: {
     marginVertical: 20,
-  }
+  },
+  button: {
+    backgroundColor: '#ccffcc', // Cor de fundo do botão
+    padding: 10,   
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#000', // Cor do texto
+    fontSize: 16,
+    fontWeight: '500',
+  },
 });
