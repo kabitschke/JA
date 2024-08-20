@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View,TouchableOpacity, Text, Button, StyleSheet, Alert } from 'react-native';
+import { View, TouchableOpacity, Text, Image, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -43,38 +43,43 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* Adicionando a imagem */}
+      <Image
+        source={require('../assets/foodtruck.jpg')}
+        resizeMode="cover"
+        style={styles.hero}
+      />
+
       <Text style={styles.title}>Bem-vindo ao Sistema de Controle de Estoque</Text>
       <Text style={styles.totalSales}>Total Vendido: R$ {totalSales.toFixed(2)}</Text>
       
-     <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('AddProduct')}
-        >
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('AddProduct')}
+      >
         <Text style={styles.buttonText}>Adicionar Produto</Text>
-    </TouchableOpacity>
+      </TouchableOpacity>
 
-    <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('ProductList')}
-        >
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ProductList')}
+      >
         <Text style={styles.buttonText}>Listar Produtos</Text>
-    </TouchableOpacity>
+      </TouchableOpacity>
 
-    <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('SalesRecord')}
-        >
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('SalesRecord')}
+      >
         <Text style={styles.buttonText}>Registrar Venda</Text>
-    </TouchableOpacity>
+      </TouchableOpacity>
 
-    <TouchableOpacity
-          style={styles.buttonAlert}
-          onPress={handleResetSales}
-        >
+      <TouchableOpacity
+        style={styles.buttonAlert}
+        onPress={handleResetSales}
+      >
         <Text style={styles.buttonText}>Zerar Vendas</Text>
-    </TouchableOpacity>
-
-
+      </TouchableOpacity>
     </View>
   );
 };
@@ -87,6 +92,11 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
   },
+  hero: {
+    width: '100%',
+    height: 120,
+    marginBottom: 20, // Adiciona um espaço abaixo da imagem
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -98,7 +108,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     padding: 10,
- 
   },
   button: {
     backgroundColor: '#ccffcc', // Cor de fundo do botão
@@ -117,6 +126,5 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-    fontWeight: '500',
   }
 });
