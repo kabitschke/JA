@@ -43,9 +43,9 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Adicionando a imagem */}
+     
       <Image
-        source={require('../assets/foodtruck.jpg')}
+        source={require('../assets/trailer.jpg')}
         resizeMode="cover"
         style={styles.hero}
       />
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   hero: {
     width: '100%',
     height: 120,
-    marginBottom: 20, // Adiciona um espaço abaixo da imagem
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -110,19 +110,18 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   button: {
-    backgroundColor: '#ccffcc', // Cor de fundo do botão
+    backgroundColor: '#ccffcc', 
     padding: 10,
     marginBottom: 8,
     borderRadius: 5,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#000', // Cor do texto
-    fontSize: 16,
+    color: '#000', 
     fontWeight: '500',
   },
   buttonAlert: {
-    backgroundColor: '#ff9999', // Cor de fundo do botão
+    backgroundColor: '#ff9999', 
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

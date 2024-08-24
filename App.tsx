@@ -12,6 +12,10 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     <View style={styles.container}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#FFF"
+      />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Home">
@@ -65,7 +69,6 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight || 0
   }
 });
 

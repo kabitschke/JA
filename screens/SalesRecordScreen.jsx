@@ -146,13 +146,13 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   button: {
-    backgroundColor: '#ccffcc', // Cor de fundo do botão
+    backgroundColor: '#ccffcc', 
     padding: 10,   
     borderRadius: 5,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#000', // Cor do texto
+    color: '#000',
     fontSize: 16,
     fontWeight: '500',
   },

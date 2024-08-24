@@ -85,14 +85,14 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   button: {
-    backgroundColor: '#ccffcc', // Cor de fundo do botão
+    backgroundColor: '#ccffcc',
     padding: 10,
     marginBottom: 4,
     borderRadius: 5,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#000', // Cor do texto
+    color: '#000', 
     fontSize: 16,
     fontWeight: '500',       
   }
